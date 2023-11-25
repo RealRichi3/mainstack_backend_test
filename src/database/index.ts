@@ -4,7 +4,7 @@ import { connectToRedisDatabase } from "./redis";
 
 async function initializeDatabaseConnection(): Promise<void> {
     await connectToMongoDBDatabase()
-    await connectToRedisDatabase()
+    connectToRedisDatabase()
 
     logger.info('Connection to databases successful')
 }

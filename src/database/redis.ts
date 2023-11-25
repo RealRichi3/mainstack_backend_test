@@ -4,9 +4,7 @@ import logger from '../middlewares/logger'
 
 const redisClient = new Redis(REDIS_URL)
 
-async function connectToRedisDatabase(): Promise<Redis> {
-    await redisClient.connect()
-
+function connectToRedisDatabase(): Redis {
     return redisClient
 }
 
