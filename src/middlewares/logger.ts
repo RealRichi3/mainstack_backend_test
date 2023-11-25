@@ -108,6 +108,7 @@ const transports: Record<NodeEnvironment, winston.transport[]> = {
     ]
 }
 
+
 const logger = winston.createLogger({
     level: 'info',
     format: combine(
@@ -120,7 +121,7 @@ const logger = winston.createLogger({
         }),
         logFormat
     ),
-    transports: transports[NODE_ENV]
+    transports: transports[NODE_ENV],
 });
 
 export default logger;
