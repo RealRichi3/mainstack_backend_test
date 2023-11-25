@@ -4,11 +4,11 @@
     "description": "This project is a simple RESTful API built with Node.js and TypeScript, using MongoDB as the database. It provides endpoints to create and manage products in a store.",
     "main": "index.js",
     "scripts": {
-        "test": "NODE_ENV=test jest --watchAll --runInBand",
-        "start": "NODE_ENV=development nodemon --exec ts-node-dev src/index.ts",
+        "test": "NODE_ENV=TEST jest --watchAll --runInBand",
+        "start": "NODE_ENV=DEV nodemon --exec ts-node-dev src/index.ts",
         "build": "tsc",
-        "dev": "NODE_ENV=development nodemon --exec ts-node-dev src/index.ts",
-        "debug": "NODE_ENV=development ts-node-dev --inspect=4321 --respawn --transpile-only --project tsconfig.json ./src/server.ts"
+        "dev": "NODE_ENV=DEV nodemon --exec ts-node-dev src/index.ts",
+        "debug": "NODE_ENV=DEV ts-node-dev --inspect=4321 --respawn --transpile-only --project tsconfig.json ./src/server.ts"
     },
     "keywords": [],
     "author": "",
