@@ -7,7 +7,6 @@ enum UserRole {
 }
 
 interface IUser {
-    _id: Types.ObjectId;
     firstname: string;
     lastname: string;
     email: string;
@@ -17,28 +16,25 @@ interface IUser {
         activated: boolean;
     }
 }
-interface IUserDoc extends Document<IUser> { }
+interface IUserDoc extends IUser, Document { }
 
 interface IAdminProfile extends IUser {
-    _id: Types.ObjectId;
     role: UserRole.Admin;
     user: Types.ObjectId;
 }
-interface IAdminProfileDoc extends Document<IAdminProfile> { }
+interface IAdminProfileDoc extends IAdminProfile, Document { }
 
 interface ISuperAdminProfile extends IUser {
-    _id: Types.ObjectId;
     role: UserRole.SuperAdmin;
     user: Types.ObjectId;
 }
-interface ISuperAdminProfileDoc extends Document<ISuperAdminProfile> { }
+interface ISuperAdminProfileDoc extends ISuperAdminProfile, Document { }
 
 interface IEndUserProfile extends IUser {
-    _id: Types.ObjectId;
     role: UserRole.EndUser;
     user: Types.ObjectId;
 }
-interface IEndUserProfileDoc extends Document<IEndUserProfile> { }
+interface IEndUserProfileDoc extends IEndUserProfile, Document { }
 
 interface IUserProfile {
     Admin: IAdminProfile;
