@@ -16,8 +16,8 @@ class UserSchemaValidator {
 
     static updateUser = z.object({
         body: z.object({
-            firstname: z.string().transform(data => data ? data.trim() : data),
-            lastname: z.string().transform(data => data ? data.trim() : data),
+            firstname: z.string().transform(data => data.trim()),
+            lastname: z.string().transform(data => data.trim()),
             email: z.string().transform(email => email.trim().toLowerCase()),
             phoneNumber: z.string().transform(phoneNumber => phoneNumber.trim()),
             role: z.enum(['EndUser', 'Admin', 'SuperAdmin']),
