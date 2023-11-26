@@ -1,7 +1,6 @@
-import { Types, Document } from 'mongoose';
+import { Document } from 'mongoose';
 
 interface IProduct {
-    _id: Types.ObjectId;
     name: string;
     description: string;
     price: number;
@@ -9,7 +8,7 @@ interface IProduct {
     image: string;
     category: string;
 }
-interface IProductDoc extends Document<IProduct, IProduct, IProduct> { }
+interface IProductDoc extends IProduct, Document { }
 
 export {
     IProduct,
