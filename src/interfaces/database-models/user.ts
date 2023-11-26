@@ -12,8 +12,12 @@ interface IUser {
     lastname: string;
     email: string;
     role: UserRole;
+    accountStatus: {
+        emailVerified: boolean;
+        activated: boolean;
+    }
 }
-interface IUserDoc extends Document<IUser, IUser, IUser> { }
+interface IUserDoc extends Document<IUser> { }
 
 interface IAdminProfile extends IUser {
     _id: Types.ObjectId;
