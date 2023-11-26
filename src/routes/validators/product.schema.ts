@@ -10,6 +10,7 @@ class ProductSchemaValidator {
             image: z.string().transform(data => data ? data.trim() : data),
         })
     });
+    
     static updateProduct = z.object({
         body: z.object({
             name: z.string().transform(data => data ? data.trim() : data),
@@ -19,22 +20,26 @@ class ProductSchemaValidator {
             image: z.string().transform(data => data ? data.trim() : data),
         })
     });
+    
     static deleteProduct = z.object({
         params: z.object({
             productId: z.string().uuid(),
         }),
-    });;
+    });
+
     static getProduct = z.object({
         params: z.object({
             productId: z.string().uuid(),
         }),
-    });;
+    });
+
     static getAllProducts = z.object({
         query: z.object({
             page: z.number().optional(),
             limit: z.number().optional(),
         }),
-    });;
+    });
+
 }
 
 export default ProductSchemaValidator;

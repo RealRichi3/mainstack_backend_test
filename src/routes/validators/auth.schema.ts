@@ -14,6 +14,7 @@ class AuthSchemaValidator {
             ])
         }
     }
+    
     static userSignup = z.object({
         body: z.object({
             email: z.string().transform(email => email.trim().toLowerCase()),
