@@ -1,11 +1,11 @@
-import { Application } from "express";
+import { Router } from "express";
 import authRouter from "./auth.routes";
 import productRouter from "./product.routes";
 
-function routeHandler(app: Application) {
-    app
-        .use('/auth', authRouter)
-        .use('/product', productRouter)
-}
+const router = Router()
 
-export default routeHandler
+router
+    .use('/auth', authRouter)
+    .use('/product', productRouter)
+
+export default router
