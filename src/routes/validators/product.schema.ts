@@ -3,21 +3,33 @@ import * as z from 'zod';
 class ProductSchemaValidator {
     static createProduct = z.object({
         body: z.object({
-            name: z.string().transform(data => data ? data.trim() : data),
-            price: z.number().transform(data => data ? data : data),
-            quantity: z.number().transform(data => data ? data : data),
+            name: z.string().transform(data => data.trim()),
+            price: z.number(),
+            quantity: z.number(),
             description: z.string().transform(data => data ? data.trim() : data),
-            image: z.string().transform(data => data ? data.trim() : data),
+            image: z.string().transform(data => data.trim()),
         })
     });
     
+    static bulkCreateProducts = z.object({
+        body: z.object({
+            products: z.array(z.object({
+                name: z.string().transform(data => data.trim()),
+                price: z.number(),
+                quantity: z.number(),
+                description: z.string().transform(data => data ? data.trim() : data),
+                image: z.string().transform(data => data.trim()),
+            })),
+        }),
+    });
+
     static updateProduct = z.object({
         body: z.object({
-            name: z.string().transform(data => data ? data.trim() : data),
-            price: z.number().transform(data => data ? data : data),
-            quantity: z.number().transform(data => data ? data : data),
-            description: z.string().transform(data => data ? data.trim() : data),
-            image: z.string().transform(data => data ? data.trim() : data),
+            name: z.string().optional().transform(data => data ? data.trim() : data),
+            price: z.number().optional().transform(data => data ? data : data),
+            quantity: z.number().optional().transform(data => data ? data : data),
+            description: z.string().optional().transform(data => data ? data.trim() : data),
+            image: z.string().optional().transform(data => data ? data.trim() : data),
         })
     });
     
