@@ -1,5 +1,6 @@
 import { Schema, Model, model } from "mongoose";
 import { UserRole, IUserDoc, IAdminProfileDoc, ISuperAdminProfileDoc, IEndUserProfileDoc } from "../interfaces/database-models/user";
+import { OPTIONS } from "./config";
 
 const UserSchema = new Schema<IUserDoc>({
     _id: { type: Schema.Types.ObjectId, required: true },
@@ -15,7 +16,7 @@ const UserSchema = new Schema<IUserDoc>({
         emailVerified: { type: Boolean, required: true },
         activated: { type: Boolean, required: true },
     },
-});
+}, OPTIONS);
 
 const AdminProfileSchema = new Schema<IAdminProfileDoc>({
     _id: { type: Schema.Types.ObjectId, required: true },
@@ -29,7 +30,7 @@ const AdminProfileSchema = new Schema<IAdminProfileDoc>({
         ref: 'User',
         required: true,
     },
-});
+}, OPTIONS);
 
 const SuperAdminProfileSchema = new Schema<ISuperAdminProfileDoc>({
     _id: { type: Schema.Types.ObjectId, required: true },
@@ -43,7 +44,7 @@ const SuperAdminProfileSchema = new Schema<ISuperAdminProfileDoc>({
         ref: 'User',
         required: true,
     },
-});
+}, OPTIONS);
 
 const EndUserProfileSchema = new Schema<IEndUserProfileDoc>({
     _id: { type: Schema.Types.ObjectId, required: true },
@@ -57,7 +58,7 @@ const EndUserProfileSchema = new Schema<IEndUserProfileDoc>({
         ref: 'User',
         required: true,
     },
-});
+}, OPTIONS);
 
 
 const UserModel: Model<IUserDoc> = model('User', UserSchema);

@@ -1,19 +1,17 @@
 import { Document } from "mongoose";
 import { Types } from "mongoose";
+import { IUserDoc } from "./user";
 
 interface IPassword {
-    _id: Types.ObjectId;
     user: Types.ObjectId,
     password: string;
 }
 
-interface IPasswordDoc extends Document<IPassword> { }
-interface IPasswordWithUser extends IPasswordDoc { user: Types.ObjectId }
-interface IPasswordWithUserDoc extends Document<IPasswordWithUser> { }
+interface IPasswordDoc extends IPassword, Document { }
+interface IPasswordWithUserDoc extends Omit<IPasswordDoc, 'user'> { user: IUserDoc }
 
 export {
     IPassword,
     IPasswordDoc,
-    IPasswordWithUser,
-    IPasswordWithUserDoc
+    IPasswordWithUserDoc,
 }
