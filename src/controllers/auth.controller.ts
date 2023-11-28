@@ -6,8 +6,10 @@ import PasswordModel from "../models/password.model";
 import { IUserDoc } from "../interfaces/database-models/user";
 import { AuthTokenType, AuthorizationUtil } from "../utils/token";
 import { AuthenticatedRequest } from "../interfaces/auth";
+import Validator from "../utils/validator";
 
-class Validator {
+// Some of the vaidation logic will be moved to the zod validation schema
+class AuthValidator {
     static async validateSignup({ firstname, lastname, email, password, role }: {
         firstname: string,
         lastname: string,
@@ -61,17 +63,42 @@ class Validator {
 
         return { user }; // No validation errors
     }
+
+    static async validateForgotPassword({ email, password }: {
+        email: string, password: string
+    }): Promise<{ user: IUserDoc }> {
+        if (!email) {
+            throw new BadRequestError('All fields are required');
+        }
+
+        const user = await UserModel.findOne({ email });
+        if (!user) {
+            throw new BadRequestError('Invalid email');
+        }
+
+        const validPassword = Validator.isPassword(password);
+        if (!validPassword) {
+            throw new BadRequestError('Invalid password');
+        }
+
+        return { user }; // No validation errors
+    }
 }
 
 
+export default class AuthController {
+    private static validator = AuthValidator;
 
-class AuthController {
-    private static validator = Validator;
-
+    /**
+     * Login
+     * 
+     * @param req.body.email - the user's email
+     * @param req.body.password - the user's password
+     */
     static async login(req: Request, res: Response, next: NextFunction) {
         const { email, password } = req.body;
 
-        const { user } = await Validator.validateLogin({ email, password });
+        const { user } = await this.validator.validateLogin({ email, password });
 
         // All generated tokens are stored in cache
         // The cache is used to verify the tokens
@@ -90,19 +117,34 @@ class AuthController {
         })
     }
 
+    /**
+     * Signup
+     * 
+     * @description Signup flow should require some form of verification,
+     * i.e OTP code sent to email or phone number
+     * but for the scope of this project, we will just assume that the user has access to the email
+     * 
+     * @param req.body.email - the user's email
+     * @param req.body.password - the user's password
+     */
     static async signup(req: Request, res: Response) {
+        /**
+         * Signup flow should require some form of verification,
+         * But for the scope of this project, we will just assume that the user has access to the email
+         */
+
         const { firstname, lastname, email, password, role } = req.body;
 
         /**
          * Validate the request body
          * 
-         * This is different from the validation done by the schema validator middleware.
-         * The schema validator middleware validates the request body against a zod schema.
+         * This is different from the validation done by the schema AuthValidator middleware.
+         * The schema AuthValidator middleware validates the request body against a zod schema.
          * 
          * This validation goes further, in come cases, it checks if the email is already registered
          * Basically it checks if the data is valid for the database
          */
-        await Validator.validateSignup({ firstname, lastname, email, password, role });
+        await this.validator.validateSignup({ firstname, lastname, email, password, role });
 
         const session = await mongoose.connection.startSession()
 
@@ -112,7 +154,7 @@ class AuthController {
             lastname,
             email,
             role,
-            accountStatus: { emailVerified: false, activated: false },
+            accountStatus: { emailVerified: false, activated: true },   // All accounts will be activated by default for now
         }, { session });
 
         await PasswordModel.create([{
@@ -138,19 +180,30 @@ class AuthController {
         res.status(200).json({ status: 'success', message: 'Logout successful', data: null });
     }
 
+    /**
+     * Forgot password flow
+     * 
+     * @description Forgot password flow should require some form of verification,
+     * i.e OTP code sent to email or phone number
+     * but for the scope of this project, we will just assume that the user has access to the email
+     * 
+     * @param req.body.email - the user's email
+     * @param req.body.newPassword - the user's new password
+     */
     static async forgotPassword(req: Request, res: Response, next: NextFunction) {
-        const 
+        const { email, newPassword } = req.body;
+
+        const { user } = await this.validator.validateForgotPassword({ email, password: newPassword });
+        const userPassword = await PasswordModel.findOne({ user: user._id });
+        if (!userPassword) {
+            throw new InternalServerError('User password record not found');
+        }
+
+        await userPassword.updatePassword(newPassword);
+
+        res.status(200).json({ status: 'success', message: 'Password reset successful', data: null });
     }
 
     static async resetPassword(req: Request, res: Response, next: NextFunction) {
-        // ...
-    }
-
-    static async verifyEmail(req: Request, res: Response, next: NextFunction) {
-        // ...
-    }
-
-    static async resendEmailVerification(req: Request, res: Response, next: NextFunction) {
-        // ...
     }
 }
