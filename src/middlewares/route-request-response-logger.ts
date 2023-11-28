@@ -3,13 +3,13 @@ import logger from "./logger";
 import { randomUUID } from 'crypto';
 import { AuthenticatedRequest } from '../interfaces/auth';
 
-export const requestResponseLogger = async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
+export const requestResponseLogger = async (req: AuthenticatedRequest<'partial'>, res: Response, next: NextFunction) => {
     const requestId = randomUUID(); // Generate a unique request ID
     res.locals.request_ref_id = requestId; // Set the request ID on the response object to be used in the response logger
 
     const requestDetails = {
         resource: req.method + " " + req.originalUrl,
-        user: req.user?.email,
+        user: req.authPayload?.user.email,
         // query: req.query,
         body: req.body,
         timestamp: new Date().toISOString(),
@@ -26,7 +26,7 @@ export const requestResponseLogger = async (req: AuthenticatedRequest, res: Resp
     res.on("finish", () => {
         const responseDetails = {
             status: res.statusCode,
-            user: req.user?.email,
+            user: req.authPayload?.user.email,
             message: res.statusMessage,
             timestamp: new Date().toISOString(),
             data: JSON.parse(res.locals.data),

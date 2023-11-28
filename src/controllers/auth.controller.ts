@@ -168,7 +168,7 @@ export default class AuthController {
      * @param req.body.refreshToken - the user's refresh token
      */
     static async logout(req: AuthenticatedRequest, res: Response, next: NextFunction) {
-        const user = await UserModel.findById(req.user._id);
+        const user = await UserModel.findById(req.authPayload.user._id);
         if (!user) {
             throw new InternalServerError('User record not found for authenticated request');
         }
@@ -189,7 +189,7 @@ export default class AuthController {
     static async refreshToken(req: AuthenticatedRequest, res: Response, next: NextFunction) {
         const { refreshToken } = req.body;
 
-        const user = await UserModel.findById(req.user._id);
+        const user = await UserModel.findById(req.authPayload.user._id);
         if (!user) {
             throw new InternalServerError('User record not found for authenticated request');
         }

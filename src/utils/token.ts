@@ -1,7 +1,9 @@
 import CacheUtil from "./cache";
 import jwt from "jsonwebtoken";
-import { IUserDoc } from "../interfaces/database-models/user";
+import { IUserDoc, IUserProfile, PlainUser } from "../interfaces/database-models/user";
 import { JWT_SECRET } from "../config";
+import { AuthenticatedUser, TokenPayload } from "../interfaces/auth";
+import { ValueOf } from "../interfaces/helper";
 
 enum AuthTokenType {
     Access = 'access',
@@ -15,15 +17,13 @@ enum AuthCodeType {
     PasswordReset = 'passwordreset'
 }
 
-type AuthType = AuthTokenType | AuthCodeType;
+export type AuthType = AuthTokenType | AuthCodeType;
 
-type AuthTokenData = { user: IUserDoc; tokenType: AuthType; expiryDate: Date };
-type SaveDataToCache = { tokenType: AuthType; data: Record<string, any> | string; user: IUserDoc; expiry?: number };
+type SaveDataToCache = { tokenType: AuthType; data: Record<string, any> | string; user: PlainUser; expiry?: number };
 
 
-class AuthTokenCipher {
+export class AuthTokenCipher {
     static async encodeToken(payload: Record<string, any>, expiry?: number) {
-        console.log(expiry);
         return jwt.sign(payload, JWT_SECRET, expiry ? { expiresIn: 1000 } : {});
     }
 
@@ -34,7 +34,7 @@ class AuthTokenCipher {
 
 
 class AuthCache {
-    static generateKey({ user, tokenType }: { user: IUserDoc; tokenType: AuthType }) {
+    static generateKey({ user, tokenType }: { user: PlainUser; tokenType: AuthType }) {
         return `${user._id}:${tokenType}`;
     }
 
@@ -43,16 +43,16 @@ class AuthCache {
         return CacheUtil.saveToCache({ key, value: data, ttl: expiry });
     }
 
-    static async getData({ tokenType, user }: { tokenType: AuthType; user: IUserDoc }) {
+    static async getData({ tokenType, user }: { tokenType: AuthType; user: PlainUser }) {
         const key = this.generateKey({ user, tokenType });
         return CacheUtil.getFromCache(key);
     }
 
-    static async compareToken({ tokenType, token, user }: { tokenType: AuthType; token: string; user: IUserDoc }) {
+    static async compareToken({ tokenType, token, user }: { tokenType: AuthType; token: string; user: PlainUser }) {
         return this.compareData({ tokenType, user, dataToCompare: token });
     }
 
-    private static async compareData({ tokenType, user, dataToCompare }: { tokenType: AuthType; user: IUserDoc; dataToCompare: string }) {
+    private static async compareData({ tokenType, user, dataToCompare }: { tokenType: AuthType; user: PlainUser; dataToCompare: string }) {
         const tokenSavedInCache = await this.getData({ tokenType, user });
         return tokenSavedInCache === dataToCompare;
     }
@@ -61,26 +61,32 @@ class AuthCache {
 
 class AuthorizationUtil {
     static async generateToken({ tokenType, user, expiry }: { tokenType: AuthType; user: IUserDoc; expiry: number }) {
-        const dataToEmbedInToken: AuthTokenData = { user, tokenType, expiryDate: new Date(expiry) };
+        const userProfile = await user.getProfile()
+        const plainUserObject = user.toObject() as PlainUser;
+
+        const dataToEmbedInToken: TokenPayload = { user: { ...plainUserObject, profile: userProfile }, tokenType, expiryDate: new Date(expiry) };
         const token = await AuthTokenCipher.encodeToken(dataToEmbedInToken, expiry);
-        await AuthCache.saveData({ tokenType, data: token, user, expiry });
+        await AuthCache.saveData({ tokenType, data: token, user: plainUserObject, expiry });
         return token;
     }
 
     static async generateCode({ codeType, user, expiry }: { codeType: AuthCodeType; user: IUserDoc; expiry: number }) {
         const code = Math.floor(100000 + Math.random() * 900000).toString();
-        const dataToEmbedInCode: AuthTokenData = { user, tokenType: codeType, expiryDate: new Date(expiry) };
+        const userProfile = await user.getProfile();
+        const plainUserObject = user.toObject() as PlainUser;
+
+        const dataToEmbedInCode: TokenPayload = { user: { ...plainUserObject, profile: userProfile }, tokenType: codeType, expiryDate: new Date(expiry) };
         const token = await AuthTokenCipher.encodeToken(dataToEmbedInCode, expiry);
-        await AuthCache.saveData({ tokenType: codeType, data: token, user, expiry });
+        await AuthCache.saveData({ tokenType: codeType, data: token, user: plainUserObject, expiry });
         return code;
     }
 
-    static async clearAuthorization({ tokenType, user }: { tokenType: AuthType; user: IUserDoc }) {
+    static async clearAuthorization({ tokenType, user }: { tokenType: AuthType; user: PlainUser }) {
         const key = AuthCache.generateKey({ user, tokenType });
         return CacheUtil.deleteFromCache(key);
     }
 
-    static async verifyToken({ tokenType, token, user }: { tokenType: AuthType; token: string; user: IUserDoc }) {
+    static async verifyToken({ tokenType, token, user }: { tokenType: AuthType; token: string; user: PlainUser }) {
         return AuthCache.compareToken({ tokenType, token, user });
     }
 }
