@@ -148,6 +148,7 @@ export default class AuthController {
             accountStatus: { emailVerified: false, activated: true },   // All accounts will be activated by default for now
         }], { session });
 
+        await newUser[0].createProfile()
         await PasswordModel.create([{
             _id: new ObjectId(),
             user: newUser[0]._id,
