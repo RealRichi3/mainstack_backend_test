@@ -1,58 +1,58 @@
-import 'express-async-errors'
-import express, { Application, Request, Response, NextFunction } from 'express'
-import helmet from 'helmet'
-import morgan from 'morgan'
-import cors from 'cors'
-import { ALLOWED_ORIGINS, NODE_ENV } from './config'
-import routeHandler from './routes'
-import errorHandler from './middlewares/error-handler'
+import "express-async-errors";
+import express, { Application, Request, Response, NextFunction } from "express";
+import helmet from "helmet";
+import morgan from "morgan";
+import cors from "cors";
+import { ALLOWED_ORIGINS, NODE_ENV } from "./config";
+import routeHandler from "./routes";
+import errorHandler from "./middlewares/error-handler";
 
 const app: Application = express();
 
 function initializeMiddlewares(app: Application): void {
-    NODE_ENV === 'DEV' && app.use(morgan('dev'))
+    NODE_ENV === "DEV" && app.use(morgan("dev"));
 
-    app.use(helmet())
+    app.use(helmet());
 
-    app.use(cors({
-        origin: ALLOWED_ORIGINS,
-        credentials: true
-    }))
+    app.use(
+        cors({
+            origin: ALLOWED_ORIGINS,
+            credentials: true,
+        })
+    );
 
-    app.use(express.json())
+    app.use(express.json());
 }
 
 function initializeRouteHandlers(app: Application): void {
-    app.get('/', (_req: Request, res: Response, _next: NextFunction) => {
+    app.get("/", (_req: Request, res: Response, _next: NextFunction) => {
         res.status(200).send({
-            status: 'success',
-            message: 'Welcome to the API'
-        })
-    })
+            status: "success",
+            message: "Welcome to the API",
+        });
+    });
 
-    app.use('/api/v1', routeHandler)
+    app.use("/api/v1", routeHandler);
 
-    app.all('*', (_req: Request, res: Response, _next: NextFunction) => {
+    app.all("*", (_req: Request, res: Response, _next: NextFunction) => {
         res.status(404).send({
-            status: 'error',
-            message: 'Route not found'
-        })
-    })
+            status: "error",
+            message: "Route not found",
+        });
+    });
 
-    app.use(errorHandler)
+    app.use(errorHandler);
 
-    return
+    return;
 }
 
 function initializeExpressServer(): Application {
-    initializeMiddlewares(app)
-    initializeRouteHandlers(app)
+    initializeMiddlewares(app);
+    initializeRouteHandlers(app);
 
-    return app
+    return app;
 }
 
-export {
-    initializeExpressServer
-}
+export { initializeExpressServer };
 
-export default app
+export default app;

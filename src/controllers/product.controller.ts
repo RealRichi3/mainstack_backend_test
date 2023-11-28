@@ -1,6 +1,6 @@
-import { Request, Response } from 'express';
-import { ProductModel } from '../models/product.model';
-import { NotFoundError } from '../utils/error';
+import { Request, Response } from "express";
+import { ProductModel } from "../models/product.model";
+import { NotFoundError } from "../utils/error";
 
 class ProductController {
     static async createProduct(req: Request, res: Response) {
@@ -12,7 +12,7 @@ class ProductController {
         const product = await ProductModel.findById(req.params.productId);
 
         if (!product) {
-            throw new NotFoundError('Product not found');
+            throw new NotFoundError("Product not found");
         }
 
         res.status(200).json(product);
@@ -26,7 +26,7 @@ class ProductController {
         );
 
         if (!product) {
-            throw new NotFoundError('Product not found');
+            throw new NotFoundError("Product not found");
         }
 
         res.status(200).json(product);
@@ -36,20 +36,20 @@ class ProductController {
         const product = await ProductModel.findByIdAndDelete(req.params.productId);
 
         if (!product) {
-            throw new NotFoundError('Product not found');
+            throw new NotFoundError("Product not found");
         }
 
         res.status(204).send();
     }
 
     static async getAllProducts(req: Request, res: Response) {
-        const { page = 1, limit = 10 } = req.query as unknown as { page: number, limit: number };
+        const { page = 1, limit = 10 } = req.query as unknown as {
+            page: number;
+            limit: number;
+        };
         const skip = (page - 1) * limit;
 
-        const products = await ProductModel.find()
-            .skip(skip)
-            .limit(limit)
-            .exec();
+        const products = await ProductModel.find().skip(skip).limit(limit).exec();
 
         res.status(200).json(products);
     }
