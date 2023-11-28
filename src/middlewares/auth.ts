@@ -5,7 +5,7 @@ import { UnauthenticatedError } from "../utils/error"
 import jwt from "jsonwebtoken"
 import { JWT_SECRET } from "../config"
 
-export const validateAuthHeader = (requiredAuthType: AuthTokenType) => {
+export const verifyAuth = (requiredAuthType: AuthTokenType) => {
     return async (req: Request, res: Response, next: NextFunction) => {
         const authHeader = req.headers.authorization;
         if (!authHeader?.startsWith('Bearer'))
