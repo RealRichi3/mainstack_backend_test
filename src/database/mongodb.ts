@@ -3,6 +3,19 @@ import { MONGO_URI_DEV, MONGO_URI_PROD, MONGO_URI_TEST, NODE_ENV } from '../conf
 import { NodeEnvironment } from '../interfaces/config';
 import logger from '../middlewares/logger';
 
+export const collectionOptions = {
+    timestamps: true,
+    versionKey: false,
+    toJSON: {
+        virtuals: true,
+        getters: true,
+    },
+    toObject: {
+        virtuals: true,
+        getters: true,
+    },
+}
+
 const connectionString: Record<NodeEnvironment, string> = {
     TEST: MONGO_URI_TEST,
     DEV: MONGO_URI_DEV,

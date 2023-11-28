@@ -1,5 +1,7 @@
 import { Schema, Model, model } from "mongoose";
 import { UserRole, IUserDoc, IAdminProfileDoc, ISuperAdminProfileDoc, IEndUserProfileDoc } from "../interfaces/database-models/user";
+import { collectionOptions } from "../database/mongodb";
+import { createProfile, getProfile } from "./methods/profile";
 
 const UserSchema = new Schema<IUserDoc>({
     _id: { type: Schema.Types.ObjectId, required: true },
@@ -15,7 +17,9 @@ const UserSchema = new Schema<IUserDoc>({
         emailVerified: { type: Boolean, required: true },
         activated: { type: Boolean, required: true },
     },
-});
+}, collectionOptions);
+UserSchema.methods.getProfile = getProfile
+UserSchema.methods.createProfile = createProfile
 
 const AdminProfileSchema = new Schema<IAdminProfileDoc>({
     _id: { type: Schema.Types.ObjectId, required: true },
@@ -29,7 +33,7 @@ const AdminProfileSchema = new Schema<IAdminProfileDoc>({
         ref: 'User',
         required: true,
     },
-});
+}, collectionOptions);
 
 const SuperAdminProfileSchema = new Schema<ISuperAdminProfileDoc>({
     _id: { type: Schema.Types.ObjectId, required: true },
@@ -43,7 +47,7 @@ const SuperAdminProfileSchema = new Schema<ISuperAdminProfileDoc>({
         ref: 'User',
         required: true,
     },
-});
+}, collectionOptions);
 
 const EndUserProfileSchema = new Schema<IEndUserProfileDoc>({
     _id: { type: Schema.Types.ObjectId, required: true },
@@ -57,7 +61,7 @@ const EndUserProfileSchema = new Schema<IEndUserProfileDoc>({
         ref: 'User',
         required: true,
     },
-});
+}, collectionOptions);
 
 
 const UserModel: Model<IUserDoc> = model('User', UserSchema);

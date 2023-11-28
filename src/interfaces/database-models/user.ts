@@ -1,4 +1,5 @@
 import { Types, Document, Model } from 'mongoose';
+import { createProfile, getProfile } from '../../models/methods/profile';
 
 enum UserRole {
     Admin = 'Admin',
@@ -16,7 +17,15 @@ interface IUser {
         activated: boolean;
     }
 }
-interface IUserDoc extends IUser, Document { }
+interface IUserMethods {
+    getProfile: typeof getProfile;
+createProfile: typeof createProfile;
+}
+interface IUserDoc extends IUser, IUserMethods, Document { }
+
+export interface PlainUser extends IUser {
+    _id: Types.ObjectId;
+}
 
 interface IAdminProfile extends IUser {
     role: UserRole.Admin;

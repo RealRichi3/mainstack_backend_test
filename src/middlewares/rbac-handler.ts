@@ -16,7 +16,7 @@ export default function rbacHandler(roles: string[]) {
     return AuthenticatedController(
         async (req: AuthenticatedRequest, res: Response, next: NextFunction)
             : Promise<void> => {
-            const { user } = req;
+            const { user } = req.authPayload;
 
             /**
              * Check if the user has the required role to access the route

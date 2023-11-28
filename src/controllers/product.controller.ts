@@ -1,7 +1,6 @@
 import { Request, Response } from 'express';
 import { ProductModel } from '../models/product.model';
-import { NotFoundError, BadRequestError } from '../utils/error';
-import { AuthenticatedController } from '../middlewares/auth';
+import { NotFoundError } from '../utils/error';
 
 class ProductController {
     static async createProduct(req: Request, res: Response) {
