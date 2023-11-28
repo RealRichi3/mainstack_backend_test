@@ -1,6 +1,7 @@
+import { NextFunction, Request, Response } from "express";
 import { IUserProfile } from "./database-models/user";
 
-interface AuthenticatedUser {
+export interface AuthenticatedUser {
     _id: string;
     email: string;
     role: string;
@@ -11,6 +12,13 @@ interface AuthenticatedUser {
     profile: IUserProfile[keyof IUserProfile];
 }
 
-export {
-    AuthenticatedUser
+export interface AuthenticatedRequest extends Request {
+    headers: {
+        authorization: string;
+        signature?: string;
+        Signature?: string;
+    }
+    user: AuthenticatedUser;
 }
+
+export type AuthenticatedAsyncController = (req: AuthenticatedRequest, res: Response, next: NextFunction) => Promise<void>;
