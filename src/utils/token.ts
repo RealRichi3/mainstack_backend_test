@@ -22,8 +22,9 @@ type SaveDataToCache = { tokenType: AuthType; data: Record<string, any> | string
 
 
 class AuthTokenCipher {
-    static async encodeToken(payload: string, expiry?: number) {
-        return jwt.sign(payload, JWT_SECRET, expiry ? { expiresIn: expiry } : {});
+    static async encodeToken(payload: Record<string, any>, expiry?: number) {
+        console.log(expiry);
+        return jwt.sign(payload, JWT_SECRET, expiry ? { expiresIn: 1000 } : {});
     }
 
     static async decodeToken(token: string) {
@@ -60,16 +61,17 @@ class AuthCache {
 
 class AuthorizationUtil {
     static async generateToken({ tokenType, user, expiry }: { tokenType: AuthType; user: IUserDoc; expiry: number }) {
-        const token = await AuthTokenCipher.encodeToken(user._id, expiry);
         const dataToEmbedInToken: AuthTokenData = { user, tokenType, expiryDate: new Date(expiry) };
-        await AuthCache.saveData({ tokenType, data: dataToEmbedInToken, user, expiry });
+        const token = await AuthTokenCipher.encodeToken(dataToEmbedInToken, expiry);
+        await AuthCache.saveData({ tokenType, data: token, user, expiry });
         return token;
     }
 
     static async generateCode({ codeType, user, expiry }: { codeType: AuthCodeType; user: IUserDoc; expiry: number }) {
         const code = Math.floor(100000 + Math.random() * 900000).toString();
         const dataToEmbedInCode: AuthTokenData = { user, tokenType: codeType, expiryDate: new Date(expiry) };
-        await AuthCache.saveData({ tokenType: codeType, data: dataToEmbedInCode, user, expiry });
+        const token = await AuthTokenCipher.encodeToken(dataToEmbedInCode, expiry);
+        await AuthCache.saveData({ tokenType: codeType, data: token, user, expiry });
         return code;
     }
 

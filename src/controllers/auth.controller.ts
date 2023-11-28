@@ -7,6 +7,7 @@ import { IUserDoc } from "../interfaces/database-models/user";
 import { AuthTokenType, AuthorizationUtil } from "../utils/token";
 import { AuthenticatedRequest } from "../interfaces/auth";
 import Validator from "../utils/validator";
+import { ObjectId } from "mongodb";
 
 // Some of the vaidation logic will be moved to the zod validation schema
 class AuthValidator {
@@ -17,10 +18,6 @@ class AuthValidator {
         password: string,
         role: UserRole,
     }): Promise<string | null> {
-        if (!firstname || !lastname || !email || !password || !role) {
-            throw new BadRequestError('All fields are required');
-        }
-
         if (!Object.values(UserRole).includes(role)) {
             throw new BadRequestError('Invalid user role');
         }
@@ -38,13 +35,9 @@ class AuthValidator {
         email: string,
         password: string,
     }): Promise<{ user: IUserDoc }> {
-        if (!email || !password) {
-            throw new BadRequestError('All fields are required');
-        }
-
         const user = await UserModel.findOne({ email });
         if (!user) {
-            throw new BadRequestError('Invalid email or password');
+            throw new BadRequestError('Incorrect email or password');
         }
 
         if (!user.accountStatus.activated) {
@@ -58,7 +51,7 @@ class AuthValidator {
 
         const passwordMatch = await userPassword.comparePassword(password);
         if (!passwordMatch) {
-            throw new BadRequestError('Invalid email or password');
+            throw new BadRequestError('Incorrect email or password');
         }
 
         return { user }; // No validation errors
@@ -67,13 +60,9 @@ class AuthValidator {
     static async validateForgotPassword({ email, password }: {
         email: string, password: string
     }): Promise<{ user: IUserDoc }> {
-        if (!email) {
-            throw new BadRequestError('All fields are required');
-        }
-
         const user = await UserModel.findOne({ email });
         if (!user) {
-            throw new BadRequestError('Invalid email');
+            throw new BadRequestError('Incorrect email');
         }
 
         const validPassword = Validator.isPassword(password);
@@ -98,7 +87,7 @@ export default class AuthController {
     static async login(req: Request, res: Response, next: NextFunction) {
         const { email, password } = req.body;
 
-        const { user } = await this.validator.validateLogin({ email, password });
+        const { user } = await AuthValidator.validateLogin({ email, password });
 
         // All generated tokens are stored in cache
         // The cache is used to verify the tokens
@@ -144,26 +133,29 @@ export default class AuthController {
          * This validation goes further, in come cases, it checks if the email is already registered
          * Basically it checks if the data is valid for the database
          */
-        await this.validator.validateSignup({ firstname, lastname, email, password, role });
+        await AuthValidator.validateSignup({ firstname, lastname, email, password, role });
 
         const session = await mongoose.connection.startSession()
+        session.startTransaction();
 
         // Create a new user
-        const newUser = await UserModel.create({
+        const newUser = await UserModel.create([{
+            _id: new ObjectId(),
             firstname,
             lastname,
             email,
             role,
             accountStatus: { emailVerified: false, activated: true },   // All accounts will be activated by default for now
-        }, { session });
+        }], { session });
 
         await PasswordModel.create([{
+            _id: new ObjectId(),
             user: newUser[0]._id,
             password,
         }], { session })
 
         await session.commitTransaction();
-        session.endSession();
+        await session.endSession();
 
         res.status(201).json({ status: 'success', message: 'Signup successful', data: { user: newUser[0] } });
     }
@@ -223,7 +215,7 @@ export default class AuthController {
     static async forgotPassword(req: Request, res: Response, next: NextFunction) {
         const { email, newPassword } = req.body;
 
-        const { user } = await this.validator.validateForgotPassword({ email, password: newPassword });
+        const { user } = await AuthValidator.validateForgotPassword({ email, password: newPassword });
         const userPassword = await PasswordModel.findOne({ user: user._id });
         if (!userPassword) {
             throw new InternalServerError('User password record not found');

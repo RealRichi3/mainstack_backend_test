@@ -9,6 +9,7 @@ const router = Router()
 router
     .post('/login', routerSchemaValidator(RouteValidatorSchema.Auth.login),  AuthController.login)
     .post('/signup', routerSchemaValidator(RouteValidatorSchema.Auth.signup), AuthController.signup)
+    .post('/reset-password', routerSchemaValidator(RouteValidatorSchema.Auth.forgotPassword), AuthController.forgotPassword)
     .post('/logout', AuthenticatedController(AuthController.logout))
     .post('/refresh', routerSchemaValidator(RouteValidatorSchema.Auth.refreshToken), AuthenticatedController(AuthController.refreshToken))
 

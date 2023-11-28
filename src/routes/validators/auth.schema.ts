@@ -13,8 +13,9 @@ class AuthSchemaValidator {
                 }
             ])
         }
+        return true
     }
-    
+
     static signup = z.object({
         body: z.object({
             email: z.string().transform(email => email.trim().toLowerCase()),
@@ -40,13 +41,12 @@ class AuthSchemaValidator {
     static forgotPassword = z.object({
         body: z.object({
             email: z.string().transform(email => email.trim().toLowerCase()),
+            newPassword: z.string().min(8).trim().refine(data => this.validatePassword(data)),
         }),
     });
 
     static resetPassword = z.object({
         body: z.object({
-            newPassword: z.string().min(8).trim().refine(data => this.validatePassword(data)),
-            passwordResetCode: z.number(),
         }),
     });
 
@@ -64,7 +64,7 @@ class AuthSchemaValidator {
 
     static login = z.object({
         body: z.object({
-            email: z.string().transform(email => Validator.isEmail(email)),
+            email: z.string().transform(email => Validator.isEmail(email) ? email.trim().toLowerCase() : email),
             password: z.string().min(8).trim().refine(data => this.validatePassword(data)),
         })
     });
