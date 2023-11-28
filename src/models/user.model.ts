@@ -1,7 +1,7 @@
 import { Schema, Model, model } from "mongoose";
 import { UserRole, IUserDoc, IAdminProfileDoc, ISuperAdminProfileDoc, IEndUserProfileDoc } from "../interfaces/database-models/user";
 import { collectionOptions } from "../database/mongodb";
-import { getProfile } from "./methods/profile";
+import { createProfile, getProfile } from "./methods/profile";
 
 const UserSchema = new Schema<IUserDoc>({
     _id: { type: Schema.Types.ObjectId, required: true },
@@ -19,6 +19,7 @@ const UserSchema = new Schema<IUserDoc>({
     },
 }, collectionOptions);
 UserSchema.methods.getProfile = getProfile
+UserSchema.methods.createProfile = createProfile
 
 const AdminProfileSchema = new Schema<IAdminProfileDoc>({
     _id: { type: Schema.Types.ObjectId, required: true },

@@ -5,19 +5,32 @@ import { UnauthenticatedError } from "../utils/error"
 import jwt from "jsonwebtoken"
 import { JWT_SECRET } from "../config"
 
-const validateAuthHeader = (requiredAuthType: AuthTokenType) => {
-    return (req: Request, res: Response, next: NextFunction) => {
+export const validateAuthHeader = (requiredAuthType: AuthTokenType) => {
+    return async (req: Request, res: Response, next: NextFunction) => {
         const authHeader = req.headers.authorization;
         if (!authHeader?.startsWith('Bearer'))
             return next(new Error('Invalid authorization header'));
 
         const jwtToken = authHeader.split(' ')[1];
-        const payload = AuthTokenCipher.decodeToken(jwtToken)
+        const payload = await AuthTokenCipher.decodeToken(jwtToken)
 
         const tokenData = payload as unknown as TokenPayload & { token: string }
         tokenData.token = jwtToken
 
         if (tokenData.tokenType !== requiredAuthType) {
+            return next(new UnauthenticatedError('Invalid authentication'))
+        }
+
+        /**
+         * In some cases the JWT token expiry date is not set
+         * Or the expiry can be set to a later date
+         * 
+         * But each token has a expiry date set in the payload
+         * In validations we'll use the expiry date set in the payload
+         */
+        const tokenExpiry = new Date(tokenData.expiryDate).getTime()
+        const currentTime = new Date().getTime()
+        if (tokenExpiry < currentTime) {
             return next(new UnauthenticatedError('Invalid authentication'))
         }
 

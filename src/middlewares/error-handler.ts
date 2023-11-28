@@ -2,6 +2,7 @@ import { Request, Response, NextFunction } from 'express';
 import { CustomAPIError } from '../utils/error';
 import logger from './logger';
 import { ZodError } from 'zod';
+import { JsonWebTokenError } from 'jsonwebtoken';
 
 function errorHandler(err: Error, req: Request, res: Response, next: NextFunction): Response {
     // console.error(err)
@@ -19,6 +20,20 @@ function errorHandler(err: Error, req: Request, res: Response, next: NextFunctio
             errors: err.errors,
             message: 'Validation Error',
         });
+    }
+    
+    if (err instanceof JsonWebTokenError) {
+        if (err.name === 'TokenExpiredError') {
+            return res.status(401).send({
+                status: 'error',
+                message: 'Token Expired',
+            });
+        } else if (err.name === 'JsonWebTokenError') {
+            return res.status(401).send({
+                status: 'error',
+                message: 'Invalid Token',
+            });
+        }
     }
 
     // if the error is not one of the specific types above, return a generic internal server error

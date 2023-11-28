@@ -64,7 +64,10 @@ class AuthorizationUtil {
         const userProfile = await user.getProfile()
         const plainUserObject = user.toObject() as PlainUser;
 
-        const dataToEmbedInToken: TokenPayload = { user: { ...plainUserObject, profile: userProfile }, tokenType, expiryDate: new Date(expiry) };
+        const expiryDate = new Date()
+        expiryDate.setSeconds(expiryDate.getSeconds() + expiry)
+        
+        const dataToEmbedInToken: TokenPayload = { user: { ...plainUserObject, profile: userProfile }, tokenType, expiryDate };
         const token = await AuthTokenCipher.encodeToken(dataToEmbedInToken, expiry);
         await AuthCache.saveData({ tokenType, data: token, user: plainUserObject, expiry });
         return token;
@@ -75,7 +78,10 @@ class AuthorizationUtil {
         const userProfile = await user.getProfile();
         const plainUserObject = user.toObject() as PlainUser;
 
-        const dataToEmbedInCode: TokenPayload = { user: { ...plainUserObject, profile: userProfile }, tokenType: codeType, expiryDate: new Date(expiry) };
+        const expiryDate = new Date()
+        expiryDate.setSeconds(expiryDate.getSeconds() + expiry)
+
+        const dataToEmbedInCode: TokenPayload = { user: { ...plainUserObject, profile: userProfile }, tokenType: codeType, expiryDate };
         const token = await AuthTokenCipher.encodeToken(dataToEmbedInCode, expiry);
         await AuthCache.saveData({ tokenType: codeType, data: token, user: plainUserObject, expiry });
         return code;
