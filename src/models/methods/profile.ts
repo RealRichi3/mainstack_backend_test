@@ -17,14 +17,12 @@ export async function getProfile(
 ): Promise<IUserProfileDoc<UserRole>> {
     let userProfile: IUserProfileDoc<UserRole> | null = null;
 
-    console.log(this);
     switch (this.role) {
         case UserRole.Admin:
             userProfile = await AdminProfileModel.findOne({ user: this._id });
         case UserRole.SuperAdmin:
             userProfile = await SuperAdminProfileModel.findOne({ user: this._id });
         case UserRole.EndUser:
-            console.log("end user");
             userProfile = await EndUserProfileModel.findOne({ user: this._id });
     }
 
