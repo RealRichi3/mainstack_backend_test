@@ -33,7 +33,7 @@ class AuthTokenCipher {
 
 
 class AuthCache {
-    private static generateKey({ user, tokenType }: { user: IUserDoc; tokenType: AuthType }) {
+    static generateKey({ user, tokenType }: { user: IUserDoc; tokenType: AuthType }) {
         return `${user._id}:${tokenType}`;
     }
 
@@ -71,6 +71,11 @@ class AuthorizationUtil {
         const dataToEmbedInCode: AuthTokenData = { user, tokenType: codeType, expiryDate: new Date(expiry) };
         await AuthCache.saveData({ tokenType: codeType, data: dataToEmbedInCode, user, expiry });
         return code;
+    }
+
+    static async clearAuthorization({ tokenType, user }: { tokenType: AuthType; user: IUserDoc }) {
+        const key = AuthCache.generateKey({ user, tokenType });
+        return CacheUtil.deleteFromCache(key);
     }
 
     static async compareToken({ tokenType, token, user }: { tokenType: AuthType; token: string; user: IUserDoc }) {
