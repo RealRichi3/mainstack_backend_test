@@ -1,13 +1,27 @@
 import { Model, Schema, model } from "mongoose";
 import { IPasswordDoc } from "../interfaces/database-models/password";
-import { OPTIONS } from "./config";
+import { collectionOptions } from "../database/mongodb";
+import bcrypt from 'bcrypt'
+import { comparePassword, updatePassword } from "./methods/password";
 
 const passwordSchema = new Schema<IPasswordDoc>({
-    user: { type: Schema.Types.ObjectId, required: true, ref: 'User' },
+    _id: { type: Schema.Types.ObjectId, required: true },
+    user: { type: Schema.Types.ObjectId, ref: 'User', required: true },
     password: { type: String, required: true },
-}, OPTIONS);
+}, collectionOptions)
 
-const PasswordModel: Model<IPasswordDoc> = model<IPasswordDoc>('Password', passwordSchema);
+passwordSchema.pre<IPasswordDoc>('save', function (next) {
+    if (this.isNew) {
+        const salt = bcrypt.genSaltSync(10);
+        const hash = bcrypt.hashSync(this.password, salt);
+        this.password = hash;
+    }
+    next();
+})
 
-export { PasswordModel };
+passwordSchema.methods.updatePassword = updatePassword
+passwordSchema.methods.comparePassword = comparePassword
 
+const PasswordModel: Model<IPasswordDoc> = model<IPasswordDoc>('Password', passwordSchema)
+
+export default PasswordModel

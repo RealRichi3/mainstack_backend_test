@@ -26,7 +26,7 @@ class Validator {
          * Password must contain at least 8 characters, 
          * one uppercase letter, one lowercase letter and one number
          */
-        const passwordRegex = /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)[a-zA-Z\d]{8,}$/;
+        const passwordRegex = /^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{8,}$/;
         return passwordRegex.test(password);
     }
 

@@ -5,6 +5,7 @@ import morgan from 'morgan'
 import cors from 'cors'
 import { ALLOWED_ORIGINS, NODE_ENV } from './config'
 import routeHandler from './routes'
+import errorHandler from './middlewares/error-handler'
 
 const app: Application = express();
 
@@ -37,6 +38,8 @@ function initializeRouteHandlers(app: Application): void {
             message: 'Route not found'
         })
     })
+
+    app.use(errorHandler)
 
     return
 }
