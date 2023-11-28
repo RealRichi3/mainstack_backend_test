@@ -78,7 +78,7 @@ class AuthorizationUtil {
         return CacheUtil.deleteFromCache(key);
     }
 
-    static async compareToken({ tokenType, token, user }: { tokenType: AuthType; token: string; user: IUserDoc }) {
+    static async verifyToken({ tokenType, token, user }: { tokenType: AuthType; token: string; user: IUserDoc }) {
         return AuthCache.compareToken({ tokenType, token, user });
     }
 }

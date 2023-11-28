@@ -15,7 +15,7 @@ class AuthSchemaValidator {
         }
     }
     
-    static userSignup = z.object({
+    static signup = z.object({
         body: z.object({
             email: z.string().transform(email => email.trim().toLowerCase()),
             firstname: z.string().transform(data => data ? data.trim() : data),
@@ -67,6 +67,12 @@ class AuthSchemaValidator {
             email: z.string().transform(email => Validator.isEmail(email)),
             password: z.string().min(8).trim().refine(data => this.validatePassword(data)),
         })
+    });
+
+    static refreshToken = z.object({
+        body: z.object({
+            refreshToken: z.string(),
+        }),
     });
 }
 

@@ -168,6 +168,13 @@ export default class AuthController {
         res.status(201).json({ status: 'success', message: 'Signup successful', data: { user: newUser[0] } });
     }
 
+    /**
+     * Logout
+     * 
+     * @description Removes the user's access and refresh tokens from the cache
+     * 
+     * @param req.body.refreshToken - the user's refresh token
+     */
     static async logout(req: AuthenticatedRequest, res: Response, next: NextFunction) {
         const user = await UserModel.findById(req.user._id);
         if (!user) {
@@ -179,6 +186,29 @@ export default class AuthController {
 
         res.status(200).json({ status: 'success', message: 'Logout successful', data: null });
     }
+
+    /**
+     * Refresh token
+     * 
+     * @description Generates a new access token for the user
+     * 
+     * @param req.body.refreshToken - the user's refresh token
+     */
+    static async refreshToken(req: AuthenticatedRequest, res: Response, next: NextFunction) {
+        const { refreshToken } = req.body;
+
+        const user = await UserModel.findById(req.user._id);
+        if (!user) {
+            throw new InternalServerError('User record not found for authenticated request');
+        }
+
+        await AuthorizationUtil.verifyToken({ user, token: refreshToken, tokenType: AuthTokenType.Refresh });
+
+        const accessToken = await AuthorizationUtil.generateToken({ user, tokenType: AuthTokenType.Access, expiry: 3 * 60 * 60 })
+
+        res.status(200).json({ status: 'success', message: 'Token refreshed successfully', data: { accessToken } });
+    }
+
 
     /**
      * Forgot password flow
