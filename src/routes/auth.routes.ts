@@ -33,6 +33,11 @@ router
         routerSchemaValidator(RouteValidatorSchema.Auth.refreshToken),
         verifyAuth(AuthTokenType.Refresh),
         AuthenticatedController(AuthController.refreshToken)
+    )
+    .get(
+        "/user",
+        verifyAuth(AuthTokenType.Access),
+        AuthenticatedController(AuthController.getLoggedInUser)
     );
 
 export default router;

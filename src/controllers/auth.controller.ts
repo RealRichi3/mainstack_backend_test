@@ -12,10 +12,7 @@ import { ObjectId } from "mongodb";
 // Some of the vaidation logic will be moved to the zod validation schema
 class AuthValidator {
     static async validateSignup({
-        firstname,
-        lastname,
         email,
-        password,
         role,
     }: {
         firstname: string;
@@ -88,7 +85,6 @@ class AuthValidator {
 }
 
 export default class AuthController {
-    private static validator = AuthValidator;
 
     /**
      * Login
@@ -316,5 +312,20 @@ export default class AuthController {
             });
     }
 
-    static async resetPassword(req: Request, res: Response, next: NextFunction) { }
+    static async getLoggedInUser(req: AuthenticatedRequest, res: Response, next: NextFunction) {
+        const user = await UserModel.findById(req.authPayload.user._id);
+        if (!user) {
+            throw new InternalServerError(
+                "User record not found for authenticated request"
+            );
+        }
+
+        res.status(200).json({
+            status: "success",
+            message: "User retrieved successfully",
+            data: { user },
+        });
+    }
+
+    static async resetPassword() { }
 }
