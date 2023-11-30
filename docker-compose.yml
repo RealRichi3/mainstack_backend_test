@@ -1,0 +1,28 @@
+version: "3"
+
+services:
+  node-app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: node:alpine
+    container_name: node-app
+    volumes:
+      - .:/app
+    environment:
+      - NODE_ENV=DEV
+      # No time to setup a replica set so exposed a test cluster
+      - MONGO_URI_DEV=mongodb+srv://mainstack:dpEoehHDMEHQkGhp@boayant.haz1j1c.mongodb.net/mainstack?retryWrites=true&w=majority
+      - MONGO_URI_LOG=mongodb+srv://mainstack:dpEoehHDMEHQkGhp@boayant.haz1j1c.mongodb.net/mainstack_log?retryWrites=true&w=majority
+      - REDIS_URL=redis://redis:6379
+      - JWT_SECRET='lsdfkja;sior;wi;dal;kjsdfa'
+    ports:
+      - 3000:3000
+    depends_on:
+      - redis
+
+  redis:
+    image: redis:7.0.14-alpine3.18
+    container_name: redis
+    ports:
+      - "6379:6379"
