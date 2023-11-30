@@ -8,6 +8,7 @@
         "start": "NODE_ENV=DEV nodemon --exec ts-node-dev src/index.ts",
         "build": "tsc",
         "dev": "NODE_ENV=DEV nodemon --exec ts-node-dev src/index.ts",
+        "prod": "NODE_ENV=DEV nodemon dist/index.js",
         "debug": "NODE_ENV=DEV ts-node-dev --inspect=4321 --respawn --transpile-only --project tsconfig.json ./src/server.ts"
     },
     "keywords": [],
