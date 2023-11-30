@@ -2,14 +2,13 @@ import { NextFunction, Request, Response } from "express"
 import { AuthenticatedAsyncController, AuthenticatedRequest, TokenPayload } from "../interfaces/auth"
 import { AuthTokenCipher, AuthTokenType, AuthorizationUtil } from "../utils/token"
 import { UnauthenticatedError } from "../utils/error"
-import jwt from "jsonwebtoken"
-import { JWT_SECRET } from "../config"
 
 export const verifyAuth = (requiredAuthType: AuthTokenType) => {
     return async (req: Request, res: Response, next: NextFunction) => {
         const authHeader = req.headers.authorization;
-        if (!authHeader?.startsWith('Bearer'))
-            return next(new Error('Invalid authorization header'));
+        if (!authHeader || !authHeader?.startsWith('Bearer')) {
+            return next(new UnauthenticatedError('Invalid authorization header'));
+        }
 
         const jwtToken = authHeader.split(' ')[1];
         const payload = await AuthTokenCipher.decodeToken(jwtToken)

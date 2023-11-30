@@ -3,8 +3,9 @@ import { AuthenticatedRequest } from '../interfaces/auth';
 import { ForbiddenError } from '../utils/error';
 import { AuthenticatedController } from './auth';
 
-async function checkUsersPriviledges(req: AuthenticatedRequest) {
+function checkUsersPriviledges(req: AuthenticatedRequest) {
     // Implement logic to check if the user has the required priviledge to access the route
+    return true
 }
 
 const criticalRoutes = {
@@ -34,7 +35,7 @@ export default function rbacHandler(roles: string[]) {
              * So in this case, we will not check if the user has the required priviledge
              */
             const routeIsCritical = criticalRoutes[req.path]
-            const response = routeIsCritical ? isPermitted : await checkUsersPriviledges(req)
+            const response = routeIsCritical ? isPermitted : checkUsersPriviledges(req) && isPermitted
 
             isPermitted = response === true
 
