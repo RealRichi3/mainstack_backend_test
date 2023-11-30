@@ -8,6 +8,7 @@ class ProductSchemaValidator {
             quantity: z.number(),
             description: z.string().transform(data => data ? data.trim() : data),
             image: z.string().transform(data => data.trim()),
+            category: z.string().transform(data => data.trim()),
         })
     });
     
@@ -30,25 +31,29 @@ class ProductSchemaValidator {
             quantity: z.number().optional().transform(data => data ? data : data),
             description: z.string().optional().transform(data => data ? data.trim() : data),
             image: z.string().optional().transform(data => data ? data.trim() : data),
-        })
+            category: z.string().optional().transform(data => data ? data.trim() : data),
+        }),
+        param: z.object({
+            productId: z.string(),
+        }),
     });
     
     static deleteProduct = z.object({
-        params: z.object({
-            productId: z.string().uuid(),
+        param: z.object({
+            productId: z.string(),
         }),
     });
 
     static getProduct = z.object({
-        params: z.object({
-            productId: z.string().uuid(),
+        query: z.object({
+            productId: z.string(),
         }),
     });
 
     static getAllProducts = z.object({
         query: z.object({
-            page: z.number().optional(),
-            limit: z.number().optional(),
+            page: z.string().optional(),
+            limit: z.string().optional(),
         }),
     });
 
