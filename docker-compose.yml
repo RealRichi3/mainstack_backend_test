@@ -2,31 +2,23 @@ version: "3"
 
 services:
   node-app:
+    build:
+      context: .
+      dockerfile: Dockerfile
     image: node:alpine
     container_name: node-app
-    ports:
-      - "3000:3000"
+    volumes:
+      - .:/app
     environment:
       - NODE_ENV=DEV
-      - MONGO_URI_DEV=mongodb://mongo:30001,mongo:30002,mongo:30003/mainstack_test
-      - MONGO_URI_LOG=mongodb://mongo:30001,mongo:30002,mongo:30003/mainstack_test_log
-      - REDIS_URL=redis://default:eQd0yXSNamapJtNWb7vvOJsJROkVYCVl@redis-12089.c11.us-east-1-3.ec2.cloud.redislabs.com:12089
+      - MONGO_URI_DEV=mongodb+srv://mainstack:dpEoehHDMEHQkGhp@boayant.haz1j1c.mongodb.net/mainstack?retryWrites=true&w=majority
+      - MONGO_URI_LOG=mongodb+srv://mainstack:dpEoehHDMEHQkGhp@boayant.haz1j1c.mongodb.net/mainstack_log?retryWrites=true&w=majority
+      - REDIS_URL=redis://redis:6379
       - JWT_SECRET='lsdfkja;sior;wi;dal;kjsdfa'
-    depends_on:
-      - mongo
-      - redis
-
-  mongo:
-    image : davybello/mongo-replica-set:5.0.12
-    container_name: mongodb
-    volumes:
-      - "./docker/.data/mongo1:/var/lib/mongo1"
-      - "./docker/.data/mongo2:/var/lib/mongo2"
-      - "./docker/.data/mongo3:/var/lib/mongo3"
     ports:
-      - 30000:27017
-      - 30001:27018
-      - 30002:27019
+      - 3000:3000
+    depends_on:
+      - redis
 
   redis:
     image: redis:7.0.14-alpine3.18
