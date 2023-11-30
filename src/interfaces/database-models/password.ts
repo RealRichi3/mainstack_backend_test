@@ -1,13 +1,23 @@
-import { IPasswordDoc } from "../../interfaces/database-models/password";
-import bcrypt from 'bcrypt'
+import { Document } from "mongoose";
+import { Types } from "mongoose";
+import { comparePassword, updatePassword } from "../../models/methods/password";
+import { IUserDoc } from "./user";
 
-export async function updatePassword (this: IPasswordDoc, password: string) {
-    const salt = bcrypt.genSaltSync(10);
-    const hash = bcrypt.hashSync(password, salt);
-    this.password = hash;
-    await this.save()
+interface IPassword {
+    user: Types.ObjectId,
+    password: string;
 }
 
-export async function comparePassword (this: IPasswordDoc, password: string) {
-    return bcrypt.compareSync(password, this.password);
+interface IPasswordMethods {
+    updatePassword: typeof updatePassword 
+    comparePassword: typeof comparePassword 
+}
+
+interface IPasswordDoc extends IPassword, IPasswordMethods, Document { }
+interface IPasswordWithUser extends Omit<IPasswordDoc, 'user'> { user: IUserDoc }
+
+export {
+    IPassword,
+    IPasswordDoc,
+    IPasswordWithUser,
 }

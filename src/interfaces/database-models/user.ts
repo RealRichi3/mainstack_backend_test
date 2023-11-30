@@ -5,7 +5,7 @@ enum UserRole {
     Admin = 'Admin',
     SuperAdmin = 'SuperAdmin',
     EndUser = 'EndUser',
-}
+} 
 
 interface IUser {
     firstname: string;
