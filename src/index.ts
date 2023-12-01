@@ -3,7 +3,9 @@ import dotenv from "dotenv";
 
 const NODE_ENV = process.env.NODE_ENV as NodeEnvironment;
 const PORT = process.env.PORT || 3000;
-dotenv.config();
+
+const path = NODE_ENV === "TEST" ? __dirname + "/../.env.test" : __dirname + "/../.env";
+dotenv.config({ path });
 
 import { initializeExpressServer } from "./app";
 import logger from "./middlewares/logger";
