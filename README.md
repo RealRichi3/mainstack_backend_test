@@ -84,7 +84,6 @@ Create a .env file in the root directory and add the following environment varia
 ```bash
 NODE_ENV=DEV
 MONGO_URI_DEV=<A hosted mongodb database>
-MONGO_URI_LOG=<A hosted mongodb database>
 REDIS_URL=redis://redis:6379
 JWT_SECRET=<secret>
 ```
@@ -96,7 +95,6 @@ Create a .env.test file in the root directory and add the following environment 
 ```bash
 NODE_ENV=TEST
 MONGO_URI_TEST=<A hosted mongodb database>
-MONGO_URI_LOG=<A hosted mongodb database>
 REDIS_URL=redis://redis:6379
 JWT_SECRET=<secret>
 ```
