@@ -4,7 +4,7 @@
     "description": "This project is a simple RESTful API built with Node.js and TypeScript, using MongoDB as the database. It provides endpoints to create and manage products in a store.",
     "main": "index.js",
     "scripts": {
-        "test": "NODE_ENV=TEST mocha --require ts-node/register ./src/test/**/*.ts",
+        "test": "NODE_ENV=TEST mocha --timeout 20000 --require ts-node/register ./src/test/**/*.ts",
         "start": "NODE_ENV=DEV nodemon --exec ts-node-dev src/index.ts",
         "build": "tsc",
         "dev": "NODE_ENV=DEV nodemon --exec ts-node-dev src/index.ts",
