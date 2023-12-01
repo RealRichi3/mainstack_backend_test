@@ -52,8 +52,6 @@ describe('Token utility', () => {
 
         await session.commitTransaction();
         await session.endSession();
-
-        // done()
     })
 
     describe('AuthTokenCipher', () => {
@@ -157,68 +155,39 @@ describe('Token utility', () => {
     });
 
 
-    // describe('AuthorizationUtil', () => {
-    //     afterEach(async () => {
-    //         sinon.restore();
-    //         await CacheUtil.deleteFromCache('123:access');
-    //     });
+    describe('AuthorizationUtil', () => {
+        describe('generateToken', () => {
+            it('should generate and save a token', async () => {
+                const token = await AuthorizationUtil.generateToken({ user: user, tokenType: AuthTokenType.Access, expiry: 3600 });
 
-    //     describe('generateToken', () => {
-    //         it('should generate and save a token', async () => {
-    //             const user = { _id: '123' };
-    //             const tokenType = AuthTokenType.Access;
-    //             const expiry = 3600;
+                // Assert that the token exists in the cache
+                const result = await AuthCache.getData({ user: plainUserData, tokenType: AuthTokenType.Access });
+                expect(result).to.equal(token);
+            });
+        });
 
-    //             const stubEncodeToken = sinon.stub(AuthTokenCipher, 'encodeToken').resolves('testToken');
-    //             const stubSaveData = sinon.stub(AuthCache, 'saveData').resolves();
+        describe('clearAuthorization', () => {
+            it('should clear authorization data from cache', async () => {
+                const tokenType = AuthTokenType.Access;
+                await AuthorizationUtil.generateToken({ user: user, tokenType, expiry: 3600 });
 
-    //             const result = await AuthorizationUtil.generateToken({ user: plainUs, tokenType, expiry });
+                await AuthorizationUtil.clearAuthorization({ user: plainUserData, tokenType });
 
-    //             expect(result).to.equal('testToken');
-    //             sinon.assert.calledOnceWithExactly(stubEncodeToken, {
-    //                 user: { _id: '123' },
-    //                 tokenType: AuthTokenType.Access,
-    //                 expiryDate: sinon.match.instanceOf(Date),
-    //             }, 3600);
-    //             sinon.assert.calledOnceWithExactly(stubSaveData, {
-    //                 user: { _id: '123' },
-    //                 tokenType: AuthTokenType.Access,
-    //                 data: 'testToken',
-    //                 expiry: 3600,
-    //             });
-    //         });
-    //     });
+                // Assert that the token no longer exists in the cache
+                const result = await AuthCache.getData({ user: plainUserData, tokenType });
+                expect(result).to.equal(null);
+            });
+        });
 
-    //     describe('clearAuthorization', () => {
-    //         it('should clear authorization data from cache', async () => {
-    //             const user = { _id: '123' };
-    //             const tokenType = AuthTokenType.Access;
+        describe('verifyToken', () => {
+            it('should verify token by comparing with data in cache', async () => {
+                const tokenType = AuthTokenType.Access;
+                const token = await AuthorizationUtil.generateToken({ user: user, tokenType, expiry: 3600 });
 
-    //             const stubDeleteFromCache = sinon.stub(CacheUtil, 'deleteFromCache').resolves();
+                const result = await AuthorizationUtil.verifyToken({ user: plainUserData, tokenType, token });
 
-    //             await AuthorizationUtil.clearAuthorization({ user, tokenType });
-
-    //             sinon.assert.calledOnceWithExactly(stubDeleteFromCache, '123:access');
-    //         });
-    //     });
-
-    //     describe('verifyToken', () => {
-    //         it('should verify token by comparing with data in cache', async () => {
-    //             const user = { _id: '123' };
-    //             const tokenType = AuthTokenType.Access;
-    //             const token = 'testToken';
-
-    //             const stubCompareToken = sinon.stub(AuthCache, 'compareToken').resolves(true);
-
-    //             const result = await AuthorizationUtil.verifyToken({ user, tokenType, token });
-
-    //             expect(result).to.equal(true);
-    //             sinon.assert.calledOnceWithExactly(stubCompareToken, {
-    //                 user: { _id: '123' },
-    //                 tokenType: AuthTokenType.Access,
-    //                 token: 'testToken',
-    //             });
-    //         });
-    //     });
-    // });
+                expect(result).to.equal(true);
+            });
+        });
+    });
 });

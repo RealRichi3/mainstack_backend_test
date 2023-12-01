@@ -64,7 +64,9 @@ export class AuthCache {
         user: PlainUser;
     }) {
         const key = this.generateKey({ user, tokenType });
-        return (await CacheUtil.getFromCache(key))?.replace(/"/g, "");
+        const data = await CacheUtil.getFromCache(key);
+
+        return data === null ? null : data.replace(/"/g, "");
     }
 
     static async compareToken({
