@@ -7,17 +7,9 @@ services:
       dockerfile: Dockerfile
     image: node
     container_name: node-app
-    # volumes:
-    #   - .:/app
-    # env_file:
-    #   .env
-    environment:
-      - NODE_ENV=DEV
-      # No time to setup a replica set so exposed a test cluster
-      - MONGO_URI_DEV=mongodb+srv://mainstack:dpEoehHDMEHQkGhp@boayant.haz1j1c.mongodb.net/mainstack?retryWrites=true&w=majority
-      - MONGO_URI_LOG=mongodb+srv://mainstack:dpEoehHDMEHQkGhp@boayant.haz1j1c.mongodb.net/mainstack_log?retryWrites=true&w=majority
-      - REDIS_URL=redis://redis:6379
-      - JWT_SECRET='lsdfkja;sior;wi;dal;kjsdfa'
+    env_file:
+      .env
+
     ports:
       - 3000:3000
     depends_on:
