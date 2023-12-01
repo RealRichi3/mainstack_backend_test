@@ -7,8 +7,7 @@ services:
       dockerfile: Dockerfile
     image: node
     container_name: node-app
-    env_file:
-      .env
+    env_file: .env
 
     ports:
       - 3000:3000
