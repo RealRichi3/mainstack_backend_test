@@ -92,4 +92,24 @@ JWT_SECRET=<secret>
 The `REDIS_URL` is the url to the redis server. If you are running the redis server within docker, you can use `redis://redis:6379` as the value.``
 
 ## Testing
-...More details on the project documentation will be updated with time.
+Create a .env.test file in the root directory and add the following environment variables:
+```bash
+NODE_ENV=TEST
+MONGO_URI_TEST=<A hosted mongodb database>
+MONGO_URI_LOG=<A hosted mongodb database>
+REDIS_URL=redis://redis:6379
+JWT_SECRET=<secret>
+```
+
+To run the tests, run the following command:
+```bash
+npm run test
+```
+
+## Docker
+To run the app in a docker container, run the following command:
+```bash
+docker-compose up
+```
+
+
