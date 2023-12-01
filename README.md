@@ -84,10 +84,9 @@ Create a .env file in the root directory and add the following environment varia
 ```bash
 NODE_ENV=DEV
 MONGO_URI_DEV=<A hosted mongodb database>
-REDIS_URL=redis://redis:6379
+REDIS_URL=<Redis SERVER URL>
 JWT_SECRET=<secret>
 ```
-
 The `REDIS_URL` is the url to the redis server. If you are running the redis server within docker, you can use `redis://redis:6379` as the value.``
 
 ## Testing
@@ -95,9 +94,10 @@ Create a .env.test file in the root directory and add the following environment 
 ```bash
 NODE_ENV=TEST
 MONGO_URI_TEST=<A hosted mongodb database>
-REDIS_URL=redis://redis:6379
+REDIS_URL=<Redis SERVER URL>
 JWT_SECRET=<secret>
 ```
+If you intend to run from the container use `redis://redis:6379` as the `REDIS_URL`
 
 To run the tests, run the following command:
 ```bash
