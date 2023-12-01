@@ -79,5 +79,17 @@ JWT_SECRET=secret
 Some endpoints require authentication. To authenticate a request, add the `Authorization` header with the value `Bearer <token>`, where `<token>` is the access token returned from the login endpoint.
 Redis cache is used to store the token. The access token expires after 1 hour, and the refresh token expires after 1 week.
 
+## Environment
+Create a .env file in the root directory and add the following environment variables:
+```bash
+NODE_ENV=DEV
+MONGO_URI_DEV=<A hosted mongodb database>
+MONGO_URI_LOG=<A hosted mongodb database>
+REDIS_URL=redis://redis:6379
+JWT_SECRET=<secret>
+```
+
+The `REDIS_URL` is the url to the redis server. If you are running the redis server within docker, you can use `redis://redis:6379` as the value.``
+
 ## Testing
 ...More details on the project documentation will be updated with time.
