@@ -40,7 +40,7 @@ export class AuthTokenCipher {
     }
 }
 
-class AuthCache {
+export class AuthCache {
     static generateKey({
         user,
         tokenType,
@@ -89,7 +89,7 @@ class AuthCache {
         dataToCompare: string;
     }) {
         const tokenSavedInCache = await this.getData({ tokenType, user });
-        return tokenSavedInCache === dataToCompare;
+        return tokenSavedInCache?.replace(/"/g, "") === dataToCompare.replace(/"/g, "");
     }
 }
 
