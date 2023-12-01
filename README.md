@@ -74,6 +74,9 @@ JWT_SECRET=secret
 | PUT    | `/products/:id`    | Update an existing product by ID      | Yes            |
 | DELETE | `/products/:id`    | Delete an existing product by ID      | Yes            |
 
+[Postman Documentation link](https://documenter.getpostman.com/view/20633788/2s9YeHbB89)
+
+
 ## Authentication
 
 Some endpoints require authentication. To authenticate a request, add the `Authorization` header with the value `Bearer <token>`, where `<token>` is the access token returned from the login endpoint.
