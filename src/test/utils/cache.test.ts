@@ -1,8 +1,8 @@
-import CacheUtil from '../utils/cache';
+import CacheUtil from '../../utils/cache';
 import { describe, it } from 'mocha';
 import { expect } from 'chai';
 
-describe('CacheUtil', () => {
+describe('Cache utility', () => {
     afterEach(() => {
     });
 
